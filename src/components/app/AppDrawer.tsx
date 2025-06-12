@@ -5,7 +5,6 @@ import { Link, useParams, useLocation } from "react-router";
 const AppDrawer = () => {
   const location = useLocation();
 
-  const url = useParams();
   const navigationMenu = [
     {
       title: "Apps Discovery",
@@ -20,8 +19,6 @@ const AppDrawer = () => {
       path: "/settings",
     },
   ];
-
-  console.log("url", url);
 
   return (
     <div
@@ -51,11 +48,13 @@ const AppDrawer = () => {
               style={{
                 padding: "10px 12px",
                 textDecoration: "none",
-                color: "inherit",
+                color: COLORS.white,
                 borderLeft: isActive
                   ? "4px solid #B5E600"
                   : "4px solid transparent",
                 backgroundColor: isActive ? COLORS.Serfice[2] : "transparent",
+                fontWeight: 500,
+                fontSize: 12,
               }}
             >
               {menu.title}

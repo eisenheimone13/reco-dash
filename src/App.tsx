@@ -1,8 +1,7 @@
-import { CssBaseline, Drawer, useMediaQuery } from "@mui/material";
+import { Drawer, useMediaQuery } from "@mui/material";
 import { useState } from "react";
 import { Outlet } from "react-router";
 import AppDrawer from "./components/app/AppDrawer";
-import { COLORS } from "./styles/colors";
 
 const drawerWidth = 240;
 
@@ -16,8 +15,6 @@ const AppLayout = () => {
 
   return (
     <>
-      {/* <CssBaseline /> */}
-
       <nav>
         <Drawer
           variant={isMobile ? "temporary" : "permanent"}
@@ -43,6 +40,7 @@ const AppLayout = () => {
           padding: "10px 16px 16px",
           backgroundColor: "#2E2E2E",
           height: "100%",
+          minHeight: 1024,
         }}
       >
         <Outlet />
