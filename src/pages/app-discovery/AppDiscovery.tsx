@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { usePutAppDataMutation } from "../../services/get-app.service";
 import { IQueryModel } from "../../services/query.model";
@@ -14,42 +14,44 @@ const columns: GridColDef[] = [
 const AppsTable = () => {
   const [filterName, setFilterName] = useState("");
   const [filterCat, setFilterCat] = useState("");
+
   const [debouncedName, setDebouncedName] = useState("");
   const [debouncedCat, setDebouncedCat] = useState("");
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 25,
-  });
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState<25 | 50>(25);
 
   const [error, setError] = useState<string | null>(null);
   const [putAppData, { data, isLoading }] = usePutAppDataMutation();
 
   const onChangeFilterName = (name: string) => {
     setFilterName(name);
-    setPaginationModel((prev) => ({ ...prev, page: 0 }));
   };
-
   const onChangeFilterCategory = (cat: string) => {
     setFilterCat(cat);
-    setPaginationModel((prev) => ({ ...prev, page: 0 }));
   };
 
   useEffect(() => {
     const id = setTimeout(() => {
       setDebouncedName(filterName);
       setDebouncedCat(filterCat);
+      setPage(0);
     }, 700);
     return () => clearTimeout(id);
   }, [filterName, filterCat]);
+
+  const paginationModel: GridPaginationModel = useMemo(
+    () => ({ page, pageSize }),
+    [page, pageSize]
+  );
 
   useEffect(() => {
     const fetchData = async () => {
       const payload: IQueryModel = {
         appName: debouncedName,
         category: debouncedCat,
-        pageNumber: paginationModel.page,
-        pageSize: paginationModel.pageSize as 25 | 50,
+        pageNumber: page,
+        pageSize: pageSize,
       };
       try {
         await putAppData(payload).unwrap();
@@ -62,7 +64,7 @@ const AppsTable = () => {
       }
     };
     fetchData();
-  }, [debouncedName, debouncedCat, paginationModel, putAppData]);
+  }, [debouncedName, debouncedCat, page, pageSize, putAppData]);
 
   return (
     <div
@@ -86,9 +88,12 @@ const AppsTable = () => {
           rowCount={data?.totalCount ?? 0}
           pagination
           paginationMode="server"
-          pageSizeOptions={[25, 50]}
           paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
+          onPaginationModelChange={(model) => {
+            setPage(model.page);
+            setPageSize(model.pageSize as 25 | 50);
+          }}
+          pageSizeOptions={[25, 50]}
           loading={isLoading}
           getRowId={(row) => row.appId}
           rowHeight={50}
@@ -100,7 +105,6 @@ const AppsTable = () => {
             color: "#FFF",
             fontSize: 12,
             fontWeight: "400",
-
             "& .MuiDataGrid-columnHeaders": {
               backgroundColor: "rgba(181, 230, 0, 0.08) !important",
             },
