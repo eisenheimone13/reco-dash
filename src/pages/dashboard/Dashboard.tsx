@@ -2,11 +2,7 @@ import { Drawer } from "@mui/material";
 import AppDiscovery from "../app-discovery/AppDiscovery";
 
 const Dashboard = () => {
-  return (
-    <div>
-      <AppDiscovery />
-    </div>
-  );
+  return <AppDiscovery />;
 };
 
 export default Dashboard;
